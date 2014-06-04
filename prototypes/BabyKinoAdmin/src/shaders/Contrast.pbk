@@ -1,0 +1,33 @@
+<languageVersion : 1.0;>
+
+kernel EdgeEffect
+<   namespace : "bongiovi.tw";
+    vendor : "bongiovi";
+    version : 1;
+    description : "Edge Effect";
+>
+{
+	input image4 src;  
+    output pixel4 dst;  
+	
+	parameter float offset
+	<
+		minValue:0.0;
+		maxValue:10.0;
+		defaultValue:1.0;
+	>;
+	
+	
+	
+    void
+    evaluatePixel()
+    {
+        float2 pos = outCoord();
+		float4 color = sampleLinear(src, pos);
+		float3 center = float3(0.5, 0.5, 0.5);
+		float3 dis = color.rgb - center;
+		dis *= offset;
+		dst = color;
+		dst.rgb = center + dis;
+    }
+}

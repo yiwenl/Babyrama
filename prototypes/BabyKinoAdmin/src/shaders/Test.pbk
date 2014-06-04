@@ -1,0 +1,20 @@
+<languageVersion : 1.0;>
+
+kernel Test
+<   namespace : "bongiovi.tw";
+    vendor : "bongiovi";
+    version : 1;
+    description : "Test";
+>
+{
+    input image4 src;
+    output pixel4 dst;
+    
+    void
+    evaluatePixel() {	                
+		float2 pos = outCoord();
+		dst = sampleNearest(src, pos);     
+		float color = (dst.r + dst.g + dst.b) / 3.0;
+		dst.rgb = float3(color, color, color);
+    }
+}

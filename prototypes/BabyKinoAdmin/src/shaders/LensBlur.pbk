@@ -1,0 +1,43 @@
+<languageVersion : 1.0;>
+
+kernel LensBlur
+<   namespace : "bongiovi.tw";
+    vendor : "bongiovi";
+    version : 1;
+    description : "Lens Blur";
+>
+{
+	input image4 src;
+	input image4 srcBlur;
+	
+    output pixel4 dst;
+	
+	
+	parameter float2 center
+	<
+		minValue:float2(0.0, 0.0);
+		maxValue:float2(1000.0, 1000.0);
+		defaultValue:float2(0.0, 0.0);
+	>;
+	
+	
+	parameter float radius
+	<
+		minValue:1.0;
+		maxValue:1000.0;
+		defaultValue:200.0;
+	>;
+	
+	
+	
+    void
+    evaluatePixel()
+    {
+		float2 pos = outCoord();
+		float dis = distance(pos, center);
+		float angle = dis / radius * 90.0;
+		if(angle > 90.0) angle = 90.0;
+		float offset = 1.0 - cos(radians(angle));
+		dst = mix(sampleNearest(src, pos), sampleNearest(srcBlur, pos), offset);
+    }
+}
