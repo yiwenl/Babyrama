@@ -1,0 +1,47 @@
+<html>
+	<head>
+		<title>GLSL</title>
+		<!-- CSS -->
+		<link type="text/css" rel="stylesheet" href="css/main.css"></link> <!-- main -->
+		<!-- JS VENDOR -->
+		<script type="text/javascript" src="js/vendor/dat.gui.min.js"></script> <!-- dat.gui -->
+		<script type="text/javascript" src="js/vendor/modernizr.custom.js"></script> <!-- modernizr -->
+		<!-- SHADERS -->
+		<script src="js/client/shaders/vertexShader.js" type="x-shader/x-vertex" id="vertex_shader"></script>
+		<script src="js/client/shaders/fragmentShader.js" type="x-shader/x-fragment" id="fragment_shader"></script>
+		<!-- JS -->
+		<script type="text/javascript" src="js/client/App.js"></script>
+		<script type="text/javascript" src="js/client/DataModel.js"></script>
+		<script type="text/javascript" src="js/client/Gui.js"></script>
+		<script type="text/javascript" src="js/client/Webcam.js"></script>
+		<script type="text/javascript" src="js/client/Webgl.js"></script>
+		
+	</head>
+	<body>
+		<h1>GLSL</h1>
+		<video autoplay id="webcam_video"></video>
+		
+		<canvas id="webgl_canvas"  width="400" height="300"></canvas>
+		<a onclick="toggle()">start/stop</a>
+		<!-- INITIALIZE -->
+		<script type="text/javascript">
+		var app;
+		var isStart = false;
+
+		window.onload = function() {
+			app = new App();
+			app.onReady = onApplicationReady;
+			app.init();
+		};
+
+		var toggle = function() {
+			isStart = !isStart;
+			isStart ? app.start() : app.stop();
+		};
+
+		var onApplicationReady = function() {
+			toggle();
+		}
+		</script>
+	</body>
+</html>

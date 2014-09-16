@@ -1,0 +1,9 @@
+body {
+	font-family:Arial;
+	font-size:small;
+	color:#fff;
+	background-color: #000;
+}
+a {
+	cursor: pointer;
+}
