@@ -21,12 +21,11 @@
 		<h1>GLSL</h1>
 		<video autoplay id="webcam_video"></video>
 		
-		<canvas id="webgl_canvas"  width="400" height="300"></canvas>
+		<canvas id="webgl_canvas"  width="400" height="400"></canvas>
 		<a onclick="toggle()">start/stop</a>
 		<!-- INITIALIZE -->
 		<script type="text/javascript">
 		var app;
-		var isStart = false;
 
 		window.onload = function() {
 			app = new App();
@@ -34,14 +33,16 @@
 			app.init();
 		};
 
-		var toggle = function() {
-			isStart = !isStart;
-			isStart ? app.start() : app.stop();
-		};
-
 		var onApplicationReady = function() {
 			toggle();
-		}
+		};
+
+		var isStart = false;
+		var toggle = function() {
+			isStart = !isStart;
+			isStart ? app.start() : app.stop();  
+		};
+
 		</script>
 	</body>
 </html>

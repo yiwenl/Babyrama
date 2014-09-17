@@ -11,6 +11,8 @@ var Gui = function(model) {
 	};
 
 	var addRGBMultiplier = function () {
+		gui.add(model, "percentDisplay", 0, 100);
+		
 		var f = gui.addFolder('Colors Multiplier');
 		f.add(model, "redMultiplier", 0, 1);
 		f.add(model, "greenMultiplier", 0, 1);

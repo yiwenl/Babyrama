@@ -2,6 +2,7 @@
 
 var WebGL = function(model) {
 	
+	var canvas;
 	var context;
 	var program;
 	var aShaders = [];
@@ -14,7 +15,7 @@ var WebGL = function(model) {
 
 	var initContext = function(canvasID, options) {
 		if (Modernizr.webgl) {
-			var canvas = document.getElementById(canvasID);
+			canvas = document.getElementById(canvasID);
 			var contextNames = ["webgl", "experimental-webgl"];
 			for (var i = 0; i < contextNames.length; i++) {
 				try {
@@ -98,28 +99,77 @@ var WebGL = function(model) {
 		context.useProgram(program);
 	};
 
-	var render = function() {
-		var positionLocation = context.getAttribLocation(program, "a_position");
-		var multiplier = context.getUniformLocation(program, "u_multiplier");
-		context.uniform4f(multiplier, data.redMultiplier, data.greenMultiplier, data.blueMultiplier, 1)
-		var buffer = context.createBuffer();
-		context.bindBuffer(context.ARRAY_BUFFER, buffer);
-		context.bufferData(
-		    context.ARRAY_BUFFER, 
-		    new Float32Array([
-		        -1.0, -1.0, 
-		         1.0, -1.0, 
-		        -1.0,  1.0, 
-		        -1.0,  1.0, 
-		         1.0, -1.0, 
-		         1.0,  1.0]), 
-		    context.STATIC_DRAW);
-		context.enableVertexAttribArray(positionLocation);
-		context.vertexAttribPointer(positionLocation, 2, context.FLOAT, false, 0, 0);
-		context.drawArrays(context.TRIANGLES, 0, 6);
+	var preRender = function() {
+		var resolutionLocation = context.getUniformLocation(program, "u_resolution");
+		context.uniform2f(resolutionLocation, canvas.width, canvas.height);
+	};
+
+	var setRectangle = function (c, x, y, w, h) {
+		var x1 = x;
+		var x2 = x + w;
+		var y1 = y;
+		var y2 = y + h;
+		c.bufferData(
+			c.ARRAY_BUFFER,
+			new Float32Array([
+				x1, y1,
+				x2, y1,
+				x1, y2,
+				x1, y2,
+				x2, y1,
+				x2, y2]),
+			c.STATIC_DRAW
+		);
 	}
 
+	var render = function() {
+		var c = context;
+		
+		var multiplier = c.getUniformLocation(program, "u_multiplier");
+		c.uniform4f(multiplier, data.redMultiplier, data.greenMultiplier, data.blueMultiplier, 1);
+
+		var percentDisplay = c.getUniformLocation(program, "u_percentDisplay");
+		c.uniform1f(percentDisplay, .625 - data.percentDisplay * .01 * .625);
+		
+		var positionLocation = c.getAttribLocation(program, "a_position");
+  		var texturePosLocation = c.getAttribLocation(program, "a_texturePos");
+
+		var texturePosBuffer = c.createBuffer();
+		c.bindBuffer(c.ARRAY_BUFFER, texturePosBuffer);
+		c.bufferData(c.ARRAY_BUFFER, new Float32Array([
+			0.0,  0.0,
+			1.0,  0.0,
+			0.0,  1.0,
+			0.0,  1.0,
+			1.0,  0.0,
+			1.0,  1.0]), c.STATIC_DRAW);
+		c.enableVertexAttribArray(texturePosLocation);
+		c.vertexAttribPointer(texturePosLocation, 2, c.FLOAT, false, 0.0, 0.0);
+
+		// create texture
+		var texture = c.createTexture();
+		c.bindTexture(c.TEXTURE_2D, texture);
+
+		c.texParameteri(c.TEXTURE_2D, c.TEXTURE_WRAP_S, c.CLAMP_TO_EDGE);
+		c.texParameteri(c.TEXTURE_2D, c.TEXTURE_WRAP_T, c.CLAMP_TO_EDGE);
+		c.texParameteri(c.TEXTURE_2D, c.TEXTURE_MIN_FILTER, c.NEAREST);
+		c.texParameteri(c.TEXTURE_2D, c.TEXTURE_MAG_FILTER, c.NEAREST);
+
+		c.texImage2D(c.TEXTURE_2D, 0.0, c.RGBA, c.RGBA, c.UNSIGNED_BYTE, data.texture);
+
+		var buffer = c.createBuffer();
+		c.bindBuffer(c.ARRAY_BUFFER, buffer);
+		c.enableVertexAttribArray(positionLocation);
+		c.vertexAttribPointer(positionLocation, 2, c.FLOAT, false, 0.0, 0.0);
+		setRectangle(c, 0.0, 0.0, data.texture.videoWidth, data.texture.videoHeight);
+
+		c.drawArrays(c.TRIANGLES, 0.0, 6);
+	};
+
+	
+
 	return {
+		preRender : preRender,
 		render : render,
 		initContext : initContext,
 		loadShaders : loadShaders,

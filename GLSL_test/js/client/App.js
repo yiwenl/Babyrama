@@ -7,17 +7,38 @@ var App = function() {
 
 	var initApplication = function() {
 		data = new DataModel();
+		initGui();
+		//initImage(initWebgl.bind(this));
+		initWebcam(initWebgl.bind(this));
+	};
+
+	var initGui = function() {
 		gui = new Gui(data); 
 		gui.init();
-		
+	};
+
+	var initWebcam = function(callback) {
+		webcam = new Webcam("webcam_video");
+		webcam.onReady = callback;
+		data.texture = webcam.video;
+		webcam.init();
+	}
+
+	var initWebgl = function(callback) {
 		webgl = new WebGL(data);
 		webgl.initContext("webgl_canvas");
-		webgl.loadShaders(["fragment_shader", "vertex_shader"], initWegGLProgram.bind(this));
-		//webcam = new Webcam("webcam_video");
-		//webcam.init();
+		webgl.loadShaders(["fragment_shader", "vertex_shader"], initWegGLProgram.bind(this));	
+	};
+
+	var initImage = function(callback) {
+		var image = new Image();
+		data.texture = image;
+		image.onload = callback;
+		image.src = "bmp/lenna.png";
 	};
 
 	var start = function() {
+		webgl.preRender();
 		render();
 	};
 
